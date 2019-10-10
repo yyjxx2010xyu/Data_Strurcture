@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sequence List", "Sequence L
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Linear List", "Linear List\Linear List.vcxproj", "{CC82D4BD-0248-4B53-A6E0-8FE03EDE30B5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Polynomial", "Polynomial\Polynomial.vcxproj", "{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,14 @@ Global
 		{CC82D4BD-0248-4B53-A6E0-8FE03EDE30B5}.Release|x64.Build.0 = Release|x64
 		{CC82D4BD-0248-4B53-A6E0-8FE03EDE30B5}.Release|x86.ActiveCfg = Release|Win32
 		{CC82D4BD-0248-4B53-A6E0-8FE03EDE30B5}.Release|x86.Build.0 = Release|Win32
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Debug|x64.ActiveCfg = Debug|x64
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Debug|x64.Build.0 = Debug|x64
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Debug|x86.ActiveCfg = Debug|Win32
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Debug|x86.Build.0 = Debug|Win32
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Release|x64.ActiveCfg = Release|x64
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Release|x64.Build.0 = Release|x64
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Release|x86.ActiveCfg = Release|Win32
+		{B4CA79E7-92ED-4095-A1FF-8C6F47C19C22}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

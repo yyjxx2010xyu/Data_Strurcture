@@ -450,6 +450,78 @@ int main()
 		cout << "表长=" << L.ListLength() << endl;
 	}
 
+	// Linear List 逆置测试
+	if (0)
+	{
+		cout << "开始链表逆置测试" << endl;
+		OrderList L;
+		int n1, e;
+		cout << "请输入元素个数n1" << endl;
+		cin >> n1;
+		cout << "请输入的n1个数字" << endl;
+		for (int i = 1; i <= n1; i++)
+		{
+			cin >> e;
+			L.ListInsert(i,e);
+		}
+		cout << "翻转整个表" << endl;
+		L.List_Reverse();
+		L.ListTraverse(MyVisit);
+	}
+
+
+	// Linear List 去重测试
+	if (0)
+	{
+		cout << "开始链表去重测试" << endl;
+		OrderList L;
+		int n1, e;
+		cout << "请输入元素个数n1" << endl;
+		cin >> n1;
+		cout << "请输入的n1个数字" << endl;
+		for (int i = 1; i <= n1; i++)
+		{
+			cin >> e;
+			L.ListInsert(i, e);
+		}
+		cout << "去重后" << endl;
+		L.List_Remove_Dup();
+		L.ListTraverse(MyVisit);
+	}
+	// Order_List 测试
+	if (1)
+	{
+		cout << "开始有序链表测试" << endl;
+		OrderList L1, L2, L3;
+		int n1, n2, num,e;
+		cout << "请输入第一个有序表的长度L1" << endl;
+		cin >> n1;
+		cout << "请输入递增的n个数字" << endl;
+		for (int i = 1; i <= n1; i++)
+		{
+			cin >> e;
+			L1.Inc_Insert(e);
+		}
+		cout << "请输入第一个有序表的长度L2" << endl;
+		cin >> n2;
+		cout << "请输入递增的n个数字" << endl;
+		for (int i = 1; i <= n2; i++)
+		{
+			cin >> e;
+			L2.Inc_Insert(e);
+		}
+
+		L3.Merge_List(L1, L2);
+		cout << endl << "L1和L2的合并结果为" << endl;
+		L3.ListTraverse(MyVisit);
+
+		cout << endl << "请输入要插入的数字" << endl;
+		cin >> num;
+		L3.Inc_Insert(num);
+		cout << endl << "新表为";
+		L3.ListTraverse(MyVisit);
+	}
+
 	// 基本操作 用于T1
 	if (0)
 	{
@@ -516,7 +588,7 @@ int main()
 	}
 
 	//合并 用于T4
-	if (1)
+	if (0)
 	{
 		OrderList L1, L2, L;
 		int e;
@@ -541,6 +613,8 @@ int main()
 
 	return 0;
 }
+
+
 
 Status OrderList::Inc_Insert(ElemType e)
 {
