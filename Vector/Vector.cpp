@@ -94,7 +94,7 @@ void Vector<T>::shrink()
 	_capacity >>= 1;
 	_elem = new T[_capacity];
 	for (int i = 0; i < _size; i++)
-		_elem = old_elem[i];
+		_elem[i] = old_elem[i];
 	delete[] old_elem;
 }
 
@@ -143,7 +143,7 @@ T Vector<T>::remove(Rank r)
 {
 	T e = _elem[r];
 	remove(r, r + 1);
-	return T;
+	return e;
 }
 
 // É¾³ýÇø¼ä[lo,hi)
@@ -227,6 +227,7 @@ void myvisit(T& val)
 	cout << val << " ";
 }
 
+/*
 int main()
 {
 	Vector<int> V;
@@ -237,3 +238,4 @@ int main()
 	V.traverse(myvisit);
 	return 0;
 }
+*/
