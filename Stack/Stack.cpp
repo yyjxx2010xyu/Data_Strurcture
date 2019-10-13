@@ -34,7 +34,7 @@ protected:
 	//void quickSort(Rank lo, Rank hi);
 	//void heapSort(Rank lo, Rank hi);
 public:
-	Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0)
+	Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0) 
 	{
 		_elem = new T[_capacity = c];
 		for (_size = 0; _size < s; _elem[_size++] = v);
@@ -307,6 +307,16 @@ void Calc(Stack<int>& S_Num, Stack<char>& S_Op)
 	S_Num.Push(t);
 }
 
+const int UNDO = 0;
+const int DONE = 1;
+class Func
+{
+public:
+	int n;
+	int res;
+	int f;
+	Func(int _n = 0, int _res = 0, int _f = 0) :n(_n), res(_res), f(_f) {}
+};
 
 int main()
 {
@@ -461,5 +471,64 @@ int main()
 		//	fclose(stdin);
 	}
 
+	// 运用栈模拟阶乘函数的调用过程 用于T4 goto写法
+	if (0)
+	{
+		int n;
+		cin >> n;
+		Stack<int> ReStack;
+		Stack<int> nStack;
+		nStack.Push(n);
+
+	Start:
+		if (nStack.Top() == 1)
+		{
+			// return 1; 
+			ReStack.Push(1);
+			nStack.Pop();
+			goto Return;
+		}
+		nStack.Push(nStack.Top() - 1);
+		goto Start;
+	Return:
+		// return n*f(n-1);
+		ReStack.Push(nStack.Top() * ReStack.Pop());
+		nStack.Pop();
+		if (!nStack.empty())
+			goto Return;
+
+		cout << ReStack.Top() << endl;
+	}
+
+	// 运用栈模拟阶乘函数的调用过程
+	if (1)
+	{
+		int n;
+		cin >> n;
+		Stack<Func>  SFunc;
+		SFunc.Push(Func(n, 0, UNDO));
+		while (!SFunc.empty())
+		{
+			// 栈顶函数结果未求出
+			if (SFunc.Top().f == UNDO)
+				if (SFunc.Top().n == 1)
+				{
+					SFunc.Top().res = 1;
+					SFunc.Top().f = DONE;
+				}
+				else
+					SFunc.Push(Func(SFunc.Top().n - 1, 0, UNDO));
+			else
+			{
+				Func F = SFunc.Pop();
+				SFunc.Top().res = F.res * SFunc.Top().n;
+				SFunc.Top().f = 1;
+			}
+			if (SFunc.size() == 1 && SFunc.Top().f)
+				break;
+		}
+		cout << SFunc.Top().res << endl;
+
+	}
 	return 0;
 }
