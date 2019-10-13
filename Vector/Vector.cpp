@@ -7,12 +7,12 @@ template <typename T>
 class Vector
 {
 protected:
-	Rank _size;
-	int _capacity;
-	T* _elem;
-	void copyFrom(T const* A, Rank lo, Rank hi);
-	void expand();
-	void shrink();
+	Rank _size;					// 元素个数
+	int _capacity;				// 容量
+	T* _elem;					// 元素指针
+	void copyFrom(T const* A, Rank lo, Rank hi);	// 赋值元素
+	void expand();									// 扩容
+	void shrink();									// 缩容
 	// 排序器暂时没写
 	//bool bubble(Rank lo, Rank hi);
 	//void bubbleSort(Rank lo, Rank hi);
@@ -24,39 +24,41 @@ protected:
 	//void quickSort(Rank lo, Rank hi);
 	//void heapSort(Rank lo, Rank hi);
 public:
-	Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0)
+	Vector(int c = DEFAULT_CAPACITY, int s = 0, T v = 0)			// 容量c,规模为s，元素初始为v
 	{
 		_elem = new T[_capacity = c]; 
 		for (_size = 0; _size < s; _elem[_size++] = v);
 	}
-	Vector(T const* A, Rank n) { copyFrom(A, 0, n); }
-	Vector(T const* A, Rank lo, Rank hi) { copyFrom(A, lo, hi); }
-	Vector(Vector<T> const& V) { copyFrom(V._elem, 0, V._size); }
-	Vector(Vector<T> const& V, Rank lo, Rank hi) { copyFrom(V._elem, lo, hi); }
-	~Vector() { delete[] _elem; }
-	Rank size() const { return _size; }
-	bool empty() const { return !_size; }
-	int disordered() const;
-	Rank find(T const& e) const { return find(e, 0, _size); }
-	Rank find(T const& e, Rank lo, Rank hi) const;
-	Rank search(T const& e) const
+	Vector(T const* A, Rank n) { copyFrom(A, 0, n); }				// 数组复制
+	Vector(T const* A, Rank lo, Rank hi) { copyFrom(A, lo, hi); }	// 区间
+	Vector(Vector<T> const& V) { copyFrom(V._elem, 0, V._size); }	// 向量整体赋值
+	Vector(Vector<T> const& V, Rank lo, Rank hi) { copyFrom(V._elem, lo, hi); }	// 区间向量复制
+	~Vector() { delete[] _elem; }									// 析构函数
+// 只读借口
+	Rank size() const { return _size; }								// 返回_size
+	bool empty() const { return !_size; }							// 判空
+	int disordered() const;											// 判断向量是否已排序
+	Rank find(T const& e) const { return find(e, 0, _size); }		// 无序向量查找
+	Rank find(T const& e, Rank lo, Rank hi) const;					// 无序向量区间查找
+	Rank search(T const& e) const									// 有序向量整体查找
 	{
 		return (0 >= _size) ? -1 : search(e, 0, _size);
 	}
-	Rank search(T const& e, Rank lo, Rank hi) const;
-	T& operator[] (Rank r) const;
-	Vector<T>& operator= (Vector<T> const&);
-	T remove(Rank r);
-	int remove(Rank lo, Rank hi);
-	Rank insert(Rank r, T const& e);
-	Rank insert(T const& e) { return insert(_size, e); }
-	//void sort(Rank lo, Rank hi);
-	void sort() { sort(0, _size); }
-	//void unsort(Rank lo, Rank hi);
-	void unsort() { unsort(0, _size); }
-	int deduplicate();
-	int uniquify();
-	void traverse(void (*visit) (T&));
+	Rank search(T const& e, Rank lo, Rank hi) const;				// 有序向量区间查找
+// 可写访问接口
+	T& operator[] (Rank r) const;									// 重载下标运算
+	Vector<T>& operator= (Vector<T> const&);						// 重载赋值操作
+	T remove(Rank r);												// 删除秩为r的元素
+	int remove(Rank lo, Rank hi);									// 删除从[lo,hi}区间的元素
+	Rank insert(Rank r, T const& e);								// 插入元素
+	Rank insert(T const& e) { return insert(_size, e); }			// 默认作为尾部插入
+	//void sort(Rank lo, Rank hi);				
+	void sort() { sort(0, _size); }									// 排序
+	//void unsort(Rank lo, Rank hi);				
+	void unsort() { unsort(0, _size); }								// 置乱
+	int deduplicate();												// 无序去重 O(n^2)
+	int uniquify();													// 有序去重 O(n)
+	void traverse(void (*visit) (T&));	
 	template <typename VST> void traverse(VST&);
 };
 
