@@ -89,7 +89,12 @@ void Vector<T>::expand()
 		_capacity = DEFAULT_CAPACITY;
 	T* old_Elem = _elem;
 	_capacity <<= 1;
-	_elem = new T[_capacity];
+	_elem = new(nothrow) T[_capacity];
+	if (_elem == NULL)
+	{
+		cerr << "Overflow" << endl;
+		exit(-1);
+	}
 	for (int i = 0; i < _size; i++)
 		_elem[i] = old_Elem[i];
 	delete[] old_Elem;
@@ -252,15 +257,15 @@ template<typename T>
 class Stack : public Vector<T>
 {
 public:
-	void Push(T const& e)
+	void Push(T const& e)						// ÈëÕ»
 	{
 		this->insert(this->size(), e);
 	}
-	T Pop()
+	T Pop()										// ³öÕ»
 	{
 		return this->remove(this->size() - 1);
 	}
-	T& Top()
+	T& Top()									// Õ»¶¥
 	{
 		return (*this)[this->size() - 1];
 	}
