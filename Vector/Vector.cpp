@@ -229,15 +229,14 @@ void myvisit(T& val)
 	cout << val << " ";
 }
 
-/*
+
 int main()
 {
-	Vector<int> V;
+	Vector<char> V;
 	int n = 10;
 	cout << n << endl;
-	for (int i = 1; i <= n; i++)
-		V.insert(i);	
+	for (int i = 0; i <n; i++)
+		V.insert(i+'0');	
 	V.traverse(myvisit);
 	return 0;
 }
-*/
