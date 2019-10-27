@@ -104,9 +104,9 @@ void List<T>::init()
 {
 	header = new ListNode <T>;
 	trailer = new ListNode <T>;
-	header->succ = trailer; 
+	header->succ = trailer;
 	header->pred = NULL;
-	trailer->pred = header; 
+	trailer->pred = header;
 	trailer->succ = NULL;
 	_size = 0;
 }
@@ -143,12 +143,12 @@ List<T>::List(List<T> const& L, int r, int n)
 }
 
 template<typename T>
-T List<T>::remove(ListNodePosi(T) p) 
+T List<T>::remove(ListNodePosi(T) p)
 {
 	T e = p->data;
-	p->pred->succ = p->succ; 
+	p->pred->succ = p->succ;
 	p->succ->pred = p->pred;
-	delete p; 
+	delete p;
 	_size--;
 	return e;
 }
@@ -157,7 +157,7 @@ template <typename T>
 List<T>::~List()
 {
 	clear();
-	delete header; 
+	delete header;
 	delete trailer;
 }
 
@@ -165,7 +165,7 @@ template<typename T> int
 List<T>::clear()
 {
 	int oldSize = _size;
-	while (0 < _size) 
+	while (0 < _size)
 		remove(header->succ);
 	return oldSize;
 }
@@ -177,7 +177,7 @@ int List<T>::deduplicate()
 {
 	if (_size < 2)return 0;
 	int oldSize = _size;
-	ListNodePosi(T) p = header; 
+	ListNodePosi(T) p = header;
 	Rank r = 0;
 	while (trailer != (p = p->succ))
 	{
@@ -316,6 +316,23 @@ const int dy[] = { 1,-1,0,0 };
 int a[Maxn][Maxm];
 bool b[Maxn][Maxm];
 
+const int DEFAULT_SIZE = 10;
+template <typename T>
+class MQ :public List<T>
+{
+protected:
+	int _cnt;
+	int _size;
+public:
+	MQ(int cnt = 0, int size = DEFAULT_SIZE) :_cnt(cnt), _size(size) {}					//	(1) 建立一个空队列
+	~MQ() {}													//	(2) 释放队列空间，将队列销毁
+	void Clear_Queue() { this->clear(); }						//	(3) 将队列清空，变成空队列		
+	bool Is_Empty() { return this->empty(); }					//	(4) 判断队列是否为空；
+	int Size() { return this->size(); }							//	(5) 返回队列内的元素个数；
+	T Pop() { return this->remove(this->first()); }				//	(6) 将队头元素弹出队列（出队）
+	void Push(T const& e) { this->insertAsLast(e); }			//	(7) 在队列中加入一个元素（入队）
+	void Travel() { this->traverse(myvisit); cout << endl; }	//	(8) 从队头到队尾将队列中的元素依次输出
+};
 
 int main()
 {
@@ -351,7 +368,7 @@ int main()
 	}
 
 	// T2 队列的应用
-	if (1)
+	if (0)
 	{
 
 		int n, m;
@@ -400,6 +417,37 @@ int main()
 					Ans++;
 			}
 		cout << Ans << endl;
+	}
+
+	if (1)
+	{
+		cout << "新建空的队列" << endl;
+		MQ<int> Q(0, 20);
+		cout << "当前队列状态为：" << Q.empty() << endl;
+		cout << "向队列中推入1~10" << endl;
+		for (int i = 1; i <= 10; i++)
+			Q.Push(i);
+		cout << "队内元素：";
+		Q.Travel();
+		cout << endl;
+		cout << "元素个数为:" << Q.Size() << endl;
+
+		cout << "当前队头出队，当前队头为：" << Q.Pop() << endl;
+		cout << "";
+
+		cout << "元素个数为:" << Q.Size() << endl;
+		cout << "请输入插入元素" << endl;
+		int e;
+		cin >> e;
+		Q.Push(e);
+		cout << "队内元素：";
+		Q.Travel();
+		cout << endl;
+		cout << "元素个数为:" << Q.Size() << endl;
+		Q.Clear_Queue();
+		cout << "清空队列" << endl;
+		cout << "元素个数为:" << Q.Size() << endl;
+		
 	}
 	return 0;
 }
