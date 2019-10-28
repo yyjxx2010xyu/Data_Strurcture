@@ -7,6 +7,9 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <list>
+#include <cstdio>
+#include <cstring>
 
 namespace Binary_Tree
 {
@@ -390,7 +393,7 @@ namespace Huffman_Tree
 	using Binary_Tree::pBinTree;
 
 	const int MAX_DEPTH = 1000;			//	树的最深深度
-	const int N_CHAR = 128;				//	字符个数，从0到127
+	const int N_CHAR = 256;				//	字符个数，从0到255
 	const char JOINT_C = '^';			//	链接字符
 
 	class Huff_Char
@@ -403,14 +406,6 @@ namespace Huffman_Tree
 		Huff_Char(char ch, int weight) : _ch(ch), _weight(weight) {}
 		int Weight() { return _weight; }
 		char Ch() { return _ch; }
-
-		//	定义比较器
-
-		//friend bool operator > (Huff_Char A, Huff_Char B) { return A._weight < B._weight; }
-		//friend bool operator == (Huff_Char A, Huff_Char B) { return A._weight == B._weight; }
-		//friend bool operator <= (Huff_Char A, Huff_Char B) { return A._weight >= B._weight; }
-		//friend bool operator >= (Huff_Char A, Huff_Char B) { return A._weight <= B._weight; }
-		//friend bool operator != (Huff_Char A, Huff_Char B) { return A._weight != B._weight; }
 	};
 
 
@@ -423,7 +418,7 @@ namespace Huffman_Tree
 	{
 		bool operator () (pHuff_Tree A, pHuff_Tree B)
 		{
-			return A->Root()->Data().Weight() < B->Root()->Data().Weight();
+			return A->Root()->Data().Weight() > B->Root()->Data().Weight();
 		}
 	};
 
@@ -457,6 +452,16 @@ namespace Huffman_Tree
 	//	通过优先队列生成Huffman树，返回树的根节点
 	pHuff_Tree Generate_Tree(Huff_Forest& Forest)
 	{
+		//	只有一个字符的情况,要特殊处理
+		if (Forest.size() == 1)
+		{
+			pHuff_Tree tp1 = Forest.top();
+			Forest.pop();
+			pHuff_Tree tp = new Huff_Tree;
+			tp->Insert_Root(Huff_Char(JOINT_C, tp1->Root()->Data().Weight()));
+			tp->Attach_LC(tp->Root(), tp1);
+			Forest.push(tp);
+		}
 		while (Forest.size() >= 2)
 		{
 			pHuff_Tree tp1 = Forest.top();
@@ -471,6 +476,8 @@ namespace Huffman_Tree
 		}
 		return Forest.top();
 	}
+
+	//	将通过Huffman树，生成Huffman编码
 	static void _Generate_T(pHuff_Node Node, int depth, Huff_Table& Table, Huff_Code& Code)
 	{
 		if (Node->Is_Leaf())
@@ -501,7 +508,6 @@ namespace Huffman_Tree
 	}
 	std::string Encode(Huff_Table& Table, std::string Str)
 	{
-		int n = 0;
 		std::string Ret("");
 		for (size_t i = 0; i < Str.length(); i++)
 		{
@@ -582,7 +588,8 @@ int main()
 	// Huffman Tree
 	if (1)
 	{
-		freopen("c.in", "r", stdin);
+		//freopen("c.in", "r", stdin);
+		std::cout << "请输入串" << std::endl;
 		std::string Str;
 		std::cin >> Str;
 		int* freq = new int[Huffman_Tree::N_CHAR];
@@ -594,11 +601,43 @@ int main()
 		Huffman_Tree::pHuff_Tree pTree = Huffman_Tree::Generate_Tree(Forest);
 		Huffman_Tree::Generate_Table(pTree, Table);
 		std::string Encrypted = Huffman_Tree::Encode(Table, Str);
-		std::cout << Encrypted << std::endl;
+		std::cout << "编码结果" << Encrypted << std::endl;
+
+		std::cout << "每个字符的哈夫曼编码" << std::endl;
+		for (int i = 0; i < Huffman_Tree::N_CHAR; i++)
+			if (freq[i])
+				std::cout << (char)i << " " << Table[i] << std::endl;
+		std::cout << std::endl;
+
 		std::string Decrypted = Huffman_Tree::Decode(pTree, Encrypted);
-		std::cout << Decrypted << std::endl;
+		std::cout << "解码结果" << Decrypted << std::endl;
 		delete[] freq;
-		fclose(stdin);
+		//fclose(stdin);
+	}
+
+	// POJ 1521
+	if (0)
+	{
+		while (true)
+		{
+			std::string Str;
+			std::cin >> Str;
+			if (Str == "END")
+				break;
+			int* freq = new int[Huffman_Tree::N_CHAR];
+			memset(freq, 0, sizeof(int) * Huffman_Tree::N_CHAR);
+			Huffman_Tree::Statistics(Str, freq);
+			Huffman_Tree::Huff_Forest Forest;
+			Huffman_Tree::Huff_Table Table;
+			Huffman_Tree::Init_Huff_Forest(Forest, freq);
+			Huffman_Tree::pHuff_Tree pTree = Huffman_Tree::Generate_Tree(Forest);
+			Huffman_Tree::Generate_Table(pTree, Table);
+			std::string Encrypted = Huffman_Tree::Encode(Table, Str);
+
+			std::cout << Str.length() * 8 << " " << Encrypted.length() << " " << std::fixed << std::setprecision(1) << (double)((size_t)Str.length() * 8) / (double)Encrypted.length() << std::endl;
+
+			delete[] freq;
+		}
 	}
 	return 0;
 }
