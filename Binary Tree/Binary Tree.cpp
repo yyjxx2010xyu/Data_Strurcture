@@ -634,7 +634,7 @@ int main()
 			Huffman_Tree::Generate_Table(pTree, Table);
 			std::string Encrypted = Huffman_Tree::Encode(Table, Str);
 
-			std::cout << Str.length() * 8 << " " << Encrypted.length() << " " << std::fixed << std::setprecision(1) << (double)((size_t)Str.length() * 8) / (double)Encrypted.length() << std::endl;
+			std::cout << Str.length() * 8 << " " << Encrypted.length() << " " << std::fixed << std::setprecision(1) << (double)((double)Str.length() * 8.0) / (double)Encrypted.length() << std::endl;
 
 			delete[] freq;
 		}
