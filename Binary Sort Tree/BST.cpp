@@ -1,4 +1,6 @@
 #include <iostream>
+#include <queue>
+#include <stack>
 
 namespace Binary_Tree
 {
@@ -38,9 +40,10 @@ namespace Binary_Tree
 		{
 			return _rc = new BinNode(data, this);
 		}
-		pBinNode<T> LC() { return _lc; }
-		pBinNode<T> RC() { return _rc; }
-		T Data() { return _data; }
+		pBinNode<T>& LC() { return _lc; }
+		pBinNode<T>& RC() { return _rc; }
+		pBinNode<T>& PA() { return _pa; }
+		T& Data() { return _data; }
 		void Travel_Level(void(*visit)(T&));
 		void Travel_Pre(void(*visit)(T&));		// preorder
 		void Travel_In(void(*visit)(T&));		// inorder
@@ -376,15 +379,110 @@ namespace Binary_Tree
 namespace BST
 {
 	using namespace Binary_Tree;
-	template <typename T> 
-	class BST : public Binary_Tree<T>
+	template <typename T>
+	class BST : public BinTree<T>
 	{
 	protected:
-		pBinNode _hot;
-		pBinNode _
+		pBinNode<T> _hot;
+		pBinNode<T>& _Search(pBinNode<T>& u, const T& e, pBinNode<T>& hot);
+		pBinNode<T> _Remove(pBinNode<T>& u, pBinNode<T>& hot);
+	public:
+		virtual pBinNode<T>& Search(const T& e);
+		virtual pBinNode<T> Insert(const T& e);
+		virtual bool Remove(const T& e);
 	};
+
+	template <typename T>
+	pBinNode<T>& BST<T>::_Search(pBinNode<T>& u, const T& e, pBinNode<T>& hot)
+	{
+		if (!u || (u->Data() == e))
+			return u;
+		hot = u;
+		return _Search((e < u->Data()) ? u->LC() : u->RC(), e, hot);
+	}
+	template <typename T>
+	pBinNode<T>& BST<T>::Search(const T& e)
+	{
+		return _Search(this->_root, e, _hot);
+	}
+
+	template <typename T>
+	pBinNode<T> BST<T>::Insert(const T& e)
+	{
+		pBinNode<T> & u = Search(e);
+		//	目标已存在
+		if (u)
+			return u;
+		u = new BinNode<T>(e, _hot);
+		this->_size++;
+		this->Update_Height_Above(u);
+		return u;
+	}
+	template <typename T>
+	pBinNode<T> BST<T>::_Remove(pBinNode<T>& u, pBinNode<T>& hot)
+	{
+		pBinNode<T> v = u;
+		pBinNode<T> succ = NULL;
+		if (!u->Has_LC())
+			succ = u = u->RC();
+		else
+			if (!u->Has_RC())
+				succ = u = u->LC();
+			else
+			{
+				v = v->succ();
+				std::swap(u->Data(), v->Data());
+				pBinNode<T> w = v->PA();
+				((w == u) ? w->LC() : w->RC()) = succ = v->RC();
+			}
+		hot = v->PA();
+		if (succ)
+			succ->PA() = hot;
+		delete v;
+		return succ;
+	}
+
+	template <typename T>
+	bool BST<T>::Remove(const T& e)
+	{
+		pBinNode<T>& u = Search(e);
+		if (!u)
+			return false;
+		_Remove(u, _hot);
+		this->_size--;
+		this->Update_Height_Above(_hot);
+		return true;
+	}
+
 };
+
+void myvisit(int &e)
+{
+	std::cout << e << " ";
+}
 int main()
 {
+	BST::BST<int> Tree;
+	int n, e;
+	std::cin >> n;
+	for (int i = 1; i <= n; i++)
+	{
+		std::cin >> e;
+		Tree.Insert(e);
+	}
+	int ae;
+	std::cin >> ae;
+	if (Tree.Remove(ae))
+		std::cout << "1" << std::endl;
+	else
+		std::cout << "0" << std::endl;
+	if (Tree.Search(ae))
+		std::cout << "1" << std::endl;
+	else
+		std::cout << "0" << std::endl;
+	Tree.Insert(ae);
+	Tree.Travel_In(myvisit);
+	std::cout << std::endl;
 
+	return 0;
 }

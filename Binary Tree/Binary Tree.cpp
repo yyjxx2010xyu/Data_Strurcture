@@ -49,8 +49,9 @@ namespace Binary_Tree
 		{
 			return _rc = new BinNode(data, this);
 		}
-		pBinNode<T> LC() { return _lc; }
-		pBinNode<T> RC() { return _rc; }
+		pBinNode<T>& LC() { return _lc; }
+		pBinNode<T>& RC() { return _rc; }
+		pBinNode<T>& PA() { return _pa; }
 		T Data() { return _data; }
 		void Travel_Level(void(*visit)(T&));
 		void Travel_Pre(void(*visit)(T&));		// preorder
