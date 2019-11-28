@@ -8,6 +8,8 @@
 #include <stack>
 #include <queue>
 #include <algorithm>
+#include <cassert>
+
 namespace Graph
 {
 	//	最大权重
@@ -45,26 +47,25 @@ namespace Graph
 			_beg_stamp(-1), _end_stamp(-1), _father(-1), _rank(MAX_RANK) {};
 		//使用模板时，不能在嵌套作用域中用相同的名称声明模板参数
 		/*
-Error
-template<class T>
-class linklist
-{
-	template<class T>   //错误
-	class node
-	{
-	}
-}
+		Error
+		template<class T>
+		class linklist
+		{
+			template<class T>   //错误
+			class node
+			{
+			}
+		}
 
-//Correct
-template<class T>
-class linklist
-{
-	template<class U>
-	class node
-	{
-	}
-}
-
+		//Correct
+		template<class T>
+		class linklist
+		{
+			template<class U>
+			class node
+			{
+			}
+		}
 		*/
 		template <typename VST>
 		friend class Graph;
@@ -102,7 +103,7 @@ class linklist
 	class Graph
 	{
 	private:
-		void _Clear()
+		void _Clear()											// 重置 
 		{
 			for (int i = 0; i < n; i++)
 			{
@@ -115,8 +116,8 @@ class linklist
 						Status(i, j) = EStatus::UNDETERMINED;
 			}
 		}
-		virtual void _Bfs(const int u, std::queue<int>& S) = 0;
-		virtual void _Dfs(const int u, std::queue<int>& S) = 0;
+		virtual void _Bfs(const int u, std::queue<int>& S) = 0;	//	Bfs
+		virtual void _Dfs(const int u, std::queue<int>& S) = 0;	//	Dfs
 	public:
 		Graph()
 		{
@@ -140,9 +141,6 @@ class linklist
 		virtual void Insert(int, int, int) = 0;					//	<u,v> 之间插入权w
 		virtual EStatus& Status(int, int) = 0;					//	边状态
 		virtual int& Weight(int, int) = 0;						//	边权
-		//	遍历
-		//	void Bfs() = 0;
-		//	void Dfs() = 0;
 	};
 
 
@@ -198,17 +196,17 @@ class linklist
 				for (int j = 0; j < this->n; j++)
 					delete _E[i][j];
 		}
-		int Id(VType u)
+		int Id(VType u)												//	节点Id
 		{
 			return _Id[u];
 		}
 
-		void Print_Ver()
+		void Print_Ver()											//	输出节点名字
 		{
 			for (int i = 0; i < this->n; i++)
 				std::cout << _V[i]._name << " ";
 		}
-		void Print_Matrix()
+		void Print_Matrix()											//	输出邻接矩阵
 		{
 			for (int i = 0; i < this->n; i++)
 			{
@@ -343,8 +341,8 @@ class linklist
 	}
 
 	//	要加typename
-		//	编译器不知道list<T*>::iterator是代表一个类型,还是代表list<T*>类中的一个成员，叫做iterator。
-		//	方便给使用的类型的使用
+	//	编译器不知道list<T*>::iterator是代表一个类型,还是代表list<T*>类中的一个成员，叫做iterator。
+	//	方便给使用的类型的使用
 	using l_iter = typename std::list<Edge* >::iterator;
 	using r_iter = typename std::list<Edge* >::reverse_iterator;
 	//	而且比较还得是同一个List 否则会list iterators incompatible 原因是myIt是myList的迭代器，而myList被赋新值之后变成了别的list的副本，所以myIt和被赋值后的myList的迭代器自然也是incompatable(无法比较)的。
@@ -387,38 +385,36 @@ class linklist
 					_Dfs((*v)->_v, S);
 		}
 	public:
-
-
-		Graph_List()
+		Graph_List()											//	构造函数
 		{
 			_V.clear();
 			_L.clear();
 			_Id.clear();
 		}
-		~Graph_List()
+		~Graph_List()											//	析构函数
 		{
 			for (int i = 0; i < this->n; i++)
 				for (l_iter j = _L[i].begin(); j != _L[i].end(); j++)
 					delete (*j);
 		}
-		int Id(VType u)
+		int Id(VType u)											//	节点Id
 		{
 			return _Id[u];
 		}
 
 
-		void Sort()
+		void Sort()												//	边排序
 		{
 			for (int i = 0; i < this->n; i++)
 				_L[i].sort(Edge_Cmp);
 		}
-		void Print_Ver()
+		void Print_Ver()										//	输出节点名字
 		{
 			for (int i = 0; i < this->n; i++)
 				std::cout << _V[i]._name << " ";
 		}
 
-		void Print_List(bool Print_W)
+		void Print_List(bool Print_W)							//	输出整个邻接表
 		{
 			for (int i = 0; i < this->n; i++)
 			{
@@ -435,7 +431,7 @@ class linklist
 			}
 		}
 
-		l_iter Get_Iter(int u, int v)
+		l_iter Get_Iter(int u, int v)							//	得到u指向v的指针
 		{
 			l_iter it = _L[u].begin();
 			for (; it != _L[u].end() && (*it)->_v != v; it++);
@@ -444,7 +440,7 @@ class linklist
 
 		//	派生类虚函数定义	
 		//	点操作
-		virtual void Insert(VType const& vertex) override			//	插入点
+		virtual void Insert(VType const& vertex) override		//	插入点
 		{
 			_V.push_back(Vertex<VType>(vertex));
 			_Id[vertex] = this->n;
@@ -456,11 +452,11 @@ class linklist
 		{
 			return _V[u]._name;
 		}
-		virtual int& InDegree(int u) override						//	入度
+		virtual int& InDegree(int u) override					//	入度
 		{
 			return _V[u]._indegree;
 		}
-		virtual int& OutDegree(int u) override						//	初度
+		virtual int& OutDegree(int u) override					//	初度
 		{
 			return _V[u]._outdegree;
 		}
@@ -480,7 +476,7 @@ class linklist
 		{
 			return _V[u]._father;
 		}
-		virtual int& Rank(int u) override							//	优先级
+		virtual int& Rank(int u) override						//	优先级
 		{
 			return _V[u]._rank;
 		}
@@ -490,7 +486,7 @@ class linklist
 			return  u >= 0 && u < this->n && v >= 0 && v < this->n && (Get_Iter(u, v) != _L[u].end());
 		}
 
-		virtual void Insert(int u, int v, int w = 0) override		//	<u,v> 之间插入权w
+		virtual void Insert(int u, int v, int w = 0) override	//	<u,v> 之间插入权w
 		{
 			//	无重边
 			if (Exist(u, v))
@@ -585,7 +581,7 @@ class linklist
 
 
 	template <typename VType>
-	bool Topological_Order(Graph_List<VType>& List, std::stack<int>& S, std::vector<int>& Route)
+	bool Topological_Order(Graph_List<VType>& List, std::stack<int>& S, std::vector<int>& Route)	//	拓扑排序
 	{
 		std::stack<int> Zero;
 		for (int i = 0; i < List.n - 1; i++)
@@ -614,7 +610,7 @@ class linklist
 		return cnt == List.n;
 	}
 	template <typename VType>
-	bool Critical_Path(Graph_List<VType>& List)
+	bool Critical_Path(Graph_List<VType>& List)														//	关键路径
 	{
 		std::vector<int> Dis, Route;
 		Dis.resize(List.n);
@@ -662,6 +658,30 @@ class linklist
 
 		return true;
 	}
+};
+
+
+template <typename T>
+void Euler(Graph::Graph_Matrix<T>& G, int u, int Depth, std::vector<std::vector<bool> >& visited, std::vector<int>& Path, std::vector<std::vector<int> >& Answer)
+{
+	//	已经到了最后一个元素了，只需要检查他能不能原点即可 
+	if (Depth == G.n)
+	{
+		//	第一个元素
+		if (G.Exist(Path[0], u) && !visited[Path[0]][u])
+			Answer.push_back(Path);
+		return;
+	}
+	for (int v = 0; v < G.n; v++)
+		if (G.Exist(u, v) && u != v && !visited[u][v])
+		{
+			visited[u][v] = visited[v][u] = true;
+			Path.push_back(v);
+			Euler(G, v, Depth + 1, visited, Path, Answer);
+			visited[u][v] = visited[v][u] = false;
+			Path.pop_back();
+		}
+
 }
 
 int main()
@@ -818,7 +838,7 @@ int main()
 	}
 
 	//	T5
-	if (1)
+	if (0)
 	{
 		int n, m, u, v, w;
 		std::cin >> n >> m;
@@ -841,5 +861,108 @@ int main()
 		else
 			puts("0");
 	}
+
+	//	Euler	一笔画问题
+	/*
+		Graph:
+		   4
+		   /\
+		  /  \
+		 /    \
+		/      \
+		5------3
+		|\    /|
+		| \	 / |
+		|  \/  |
+		|  /\  |
+		| /  \ |
+		|/    \|
+		1------2
+		input:
+		5 8
+		1 2
+		1 3
+		1 5
+		2 3
+		2 5
+		3 4
+		3 5
+		4 5
+		output:
+		1-->2-->3-->4-->5-->1
+		1-->2-->5-->4-->3-->1
+		1-->3-->4-->5-->2-->1
+		1-->5-->4-->3-->2-->1
+		2-->1-->3-->4-->5-->2
+		2-->1-->5-->4-->3-->2
+		2-->3-->4-->5-->1-->2
+		2-->5-->4-->3-->1-->2
+		3-->1-->2-->5-->4-->3
+		3-->2-->1-->5-->4-->3
+		3-->4-->5-->1-->2-->3
+		3-->4-->5-->2-->1-->3
+		4-->3-->1-->2-->5-->4
+		4-->3-->2-->1-->5-->4
+		4-->5-->1-->2-->3-->4
+		4-->5-->2-->1-->3-->4
+		5-->1-->2-->3-->4-->5
+		5-->2-->1-->3-->4-->5
+		5-->4-->3-->1-->2-->5
+		5-->4-->3-->2-->1-->5
+	*/
+	if (1)
+	{
+		int n, m, u, v;
+		Graph::Graph_Matrix<int> G;
+		std::cout << "请输入点的个数和边的个数" << std::endl;
+		std::cin >> n >> m;
+		for (int i = 0; i < n; i++)
+			G.Insert(i);
+		std::cout << "请输入边" << std::endl;
+		for (int i = 1; i <= m; i++)
+		{
+			std::cin >> u >> v;
+			//	题目编号从1开始，且要求连接为1
+			G.Insert(u - 1, v - 1, 1);
+			G.Insert(v - 1, u - 1, 1);
+		}
+		std::cout << "邻接矩阵" << std::endl;
+		G.Print_Matrix();
+		std::vector<std::vector<bool> > visited;
+		std::vector<std::vector<int> > Answer;
+		std::vector<int> Path;
+
+		bool Find = false;
+		std::cout << "一笔画完的顺序为:" << std::endl;
+		for (int i = 0; i < n; i++)
+		{
+			visited.clear();
+			Answer.clear();
+			Path.clear();
+			visited.resize(n);
+			for (int j = 0; j < n; j++)
+				visited[j].resize(n);
+			for (int j = 0; j < n; j++)
+				for (int k = 0; k < n; k++)
+					visited[j][k] = false;
+
+			Path.push_back(i);
+			Euler(G, i, 1, visited, Path, Answer);
+			Path.pop_back();
+
+			
+			for (size_t j = 0; j < Answer.size(); j++)
+			{
+				assert(Answer[j].size() == n);
+				Find = true;
+				for (int k = 0; k < n; k++)
+					std::cout << Answer[j][k] + 1 << "-->";
+				std::cout << Answer[j][0] + 1 << std::endl;
+			}
+		}
+		if (!Find)
+			std::cout << "未找到结果" << std::endl;
+	}
 	return 0;
 }
+
