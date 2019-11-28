@@ -13,12 +13,12 @@ namespace Search
 		typename std::iterator_traits<ForwardIt>::difference_type count, step;
 		count = std::distance(first, last);
 
-		while (count > 0) 
+		while (count > 0)
 		{
 			it = first;
 			step = count / 2;
 			std::advance(it, step);
-			if (comp(*it, value)) 
+			if (comp(*it, value))
 			{
 				first = ++it;
 				count -= step + 1;
@@ -56,7 +56,7 @@ int main()
 		else
 			lower = Search::lower_bound(data.begin(), data.end(), key, std::less<int>());
 
-		if (lower != data.end())
+		if (lower != data.end() && *lower == key)
 			std::cout << lower - data.begin() << std::endl;
 		else
 			std::cout << "-1" << std::endl;
