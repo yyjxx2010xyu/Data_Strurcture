@@ -1,7 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <stack>
-
+#include <iomanip>
 namespace Binary_Tree
 {
 #define FromParentTo(x) \
@@ -43,6 +43,7 @@ namespace Binary_Tree
 		pBinNode<T>& LC() { return _lc; }
 		pBinNode<T>& RC() { return _rc; }
 		pBinNode<T>& PA() { return _pa; }
+		int Height() { return _height; }
 		T& Data() { return _data; }
 		void Travel_Level(void(*visit)(T&));
 		void Travel_Pre(void(*visit)(T&));		// preorder
@@ -119,7 +120,7 @@ namespace Binary_Tree
 	template<typename T>
 	void BinNode<T>::Travel_Print(pBinNode<T> Node, int depth, void(*visit)(T&))
 	{
-		const int PRINT_GAP = 5;
+		const int PRINT_GAP = 10;
 		if (Node->_rc)
 			Travel_Print(Node->_rc, depth + 1, visit);
 		std::cout << std::setw((long long)PRINT_GAP * depth) << "";
@@ -386,10 +387,12 @@ namespace BST
 		pBinNode<T> _hot;
 		pBinNode<T>& _Search(pBinNode<T>& u, const T& e, pBinNode<T>& hot);
 		pBinNode<T> _Remove(pBinNode<T>& u, pBinNode<T>& hot);
+		int _Get_Depth(pBinNode<T> u, int Depth);
 	public:
 		virtual pBinNode<T>& Search(const T& e);
 		virtual pBinNode<T> Insert(const T& e);
 		virtual bool Remove(const T& e);
+		double Get_Depth();
 	};
 
 	template <typename T>
@@ -409,7 +412,7 @@ namespace BST
 	template <typename T>
 	pBinNode<T> BST<T>::Insert(const T& e)
 	{
-		pBinNode<T> & u = Search(e);
+		pBinNode<T>& u = Search(e);
 		//	目标已存在
 		if (u)
 			return u;
@@ -421,25 +424,49 @@ namespace BST
 	template <typename T>
 	pBinNode<T> BST<T>::_Remove(pBinNode<T>& u, pBinNode<T>& hot)
 	{
-		pBinNode<T> v = u;
-		pBinNode<T> succ = NULL;
-		if (!u->Has_LC())
-			succ = u = u->RC();
-		else
-			if (!u->Has_RC())
-				succ = u = u->LC();
+		pBinNode<T> uPa = u->PA();
+		pBinNode<T> uBak = u;
+		//	OJ要求是直接使用前驱替换
+		pBinNode<T> pre = u;
+		//	实际被删除的节点的替代者
+		pBinNode<T> rep = NULL;
+
+		//	无左右子树 在这里特判了
+		if (!u->Has_LC() && !u->Has_RC())
+		{
+			free(u);
+			u = NULL;
+			hot = uPa;
+			return u;
+		}
+
+		//	只有左子树
+		if (u->Has_LC() && !u->Has_RC())
+			rep = u = u->LC();
+		//	只有右子树
+		if (!u->Has_LC() && u->Has_RC())
+			rep = u = u->RC();
+		//	有左右子树
+		if (u->Has_Both_Child())
+		{
+			pre = u->LC();
+			while (pre->RC())
+				pre = pre->RC();
+
+			std::swap(u->Data(), pre->Data());
+
+			//	特判parent为father的情况
+			if (pre->PA() != u)
+				rep = pre->PA()->RC() = pre->LC();
 			else
-			{
-				v = v->succ();
-				std::swap(u->Data(), v->Data());
-				pBinNode<T> w = v->PA();
-				((w == u) ? w->LC() : w->RC()) = succ = v->RC();
-			}
-		hot = v->PA();
-		if (succ)
-			succ->PA() = hot;
-		delete v;
-		return succ;
+				rep = pre->PA()->LC() = pre->LC();
+		}
+
+		hot = pre->PA();
+		if (rep)
+			rep->PA() = hot;
+		delete pre;
+		return rep;
 	}
 
 	template <typename T>
@@ -454,9 +481,21 @@ namespace BST
 		return true;
 	}
 
+	template <typename T>
+	int BST<T>::_Get_Depth(pBinNode<T> u, int Depth)
+	{
+		if (u == NULL)
+			return 0;
+		return Depth + _Get_Depth(u->LC(), Depth + 1) + _Get_Depth(u->RC(), Depth + 1);
+	}
+	template <typename T>
+	double BST<T>::Get_Depth()
+	{
+		return (double)_Get_Depth(this->_root, 1) / (double)this->_size;
+	}
 };
 
-void myvisit(int &e)
+void myvisit(int& e)
 {
 	std::cout << e << " ";
 }
@@ -480,9 +519,13 @@ int main()
 		std::cout << "1" << std::endl;
 	else
 		std::cout << "0" << std::endl;
+
+
+
 	Tree.Insert(ae);
-	Tree.Travel_In(myvisit);
+	Tree.Travel_Pre(myvisit);
 	std::cout << std::endl;
+	std::cout << std::fixed << std::setprecision(2) << Tree.Get_Depth() << std::endl;
 
 	return 0;
 }
