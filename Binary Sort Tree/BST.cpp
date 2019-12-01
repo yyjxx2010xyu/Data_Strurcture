@@ -389,6 +389,7 @@ namespace BST
 		pBinNode<T> _Remove(pBinNode<T>& u, pBinNode<T>& hot);
 		int _Get_Depth(pBinNode<T> u, int Depth);
 	public:
+		BST();
 		virtual pBinNode<T>& Search(const T& e);
 		virtual pBinNode<T> Insert(const T& e);
 		virtual bool Remove(const T& e);
@@ -402,6 +403,11 @@ namespace BST
 			return u;
 		hot = u;
 		return _Search((e < u->Data()) ? u->LC() : u->RC(), e, hot);
+	}
+	template<typename T>
+	BST<T>::BST()
+	{
+		_hot = NULL;
 	}
 	template <typename T>
 	pBinNode<T>& BST<T>::Search(const T& e)
